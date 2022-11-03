@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>
+    TODO list
+    <a href="{% url 'todo_app:task-create' %}" class="btn btn-primary link-to-page">
+      Add task
+    </a>
+  </h1>
+  {% for task in task_list %}
+    <p>
+      {% if task.is_done %}
+        <h4>{{ task.content }}</h4>Done
+        <a href="{% url 'todo_app:toggle-done' pk=task.id %}" class="btn btn-success link-to-page">
+          Undo
+        </a>
+      {% else %}
+        <h4>{{ task.content }}</h4>Not done
+        <a href="{% url 'todo_app:toggle-done' pk=task.id %}" class="btn btn-danger link-to-page">
+          Complete
+        </a>
+      {% endif %}
+    <p><strong>Created: </strong> {{ task.datetime}}</p>
+    {% for tag in task.tags.all %}
+      <p><strong>Tags: </strong>{{ tag.name }}
+    {% endfor %}
+      <a href="{% url 'todo_app:task-update' pk=task.id %}" >
+        Update
+      </a>
+      <a href="{% url 'todo_app:task-delete' pk=task.id %}" >
+        Delete
+      </a>
+  </p>
+  {% empty %}
+    <p>No tasks!</p>
+  {% endfor %}
+{% endblock %}
