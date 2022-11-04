@@ -20,7 +20,9 @@
           Complete
         </a>
       {% endif %}
-    <p><strong>Created: </strong> {{ task.datetime}}</p>
+    <p><strong>Created: </strong> {{ task.created_at}}
+      {% if task.deadline %}<strong>Deadline: </strong>{{ task.deadline }} {% endif %}
+    </p>
     {% for tag in task.tags.all %}
       <p><strong>Tags: </strong>{{ tag.name }}
     {% endfor %}

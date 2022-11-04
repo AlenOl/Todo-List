@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -10,6 +10,8 @@ from todo_app.models import Task, Tags
 
 class TaskListView(generic.ListView):
     model = Task
+    context_object_name = "task_list"
+    template_name = "todo_app/task_list.html"
 
 
 class TagListView(generic.ListView):
@@ -23,12 +25,11 @@ class TaskCreateView(generic.CreateView):
 
 
 def toggle_done(request, pk):
-    if Task.objects.get(id=pk):
-        Task.is_done = False
-    else:
-        Task.is_done = True
+    task = get_object_or_404(Task, pk=pk)
+    task.is_done = not task.is_done
+    task.save()
 
-    return HttpResponseRedirect(reverse_lazy("todo_app:task-list", args=[pk]))
+    return HttpResponseRedirect(reverse_lazy("todo_app:task-list"))
 
 
 class TaskUpdateView(generic.UpdateView):
@@ -46,6 +47,7 @@ class TaskDeleteView(generic.DeleteView):
 class TagsCreateView(generic.CreateView):
     model = Tags
     fields = "__all__"
+    queryset = Task.objects.all().prefetch_related("tags")
     success_url = reverse_lazy("todo_app:tags-list")
 
 
